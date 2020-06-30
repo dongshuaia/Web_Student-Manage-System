@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+
+
+    <!--    加载db.properties配置文件-->
+    <bean class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer" id="configurer">
+        <property name="locations" >
+            <array>
+                <value>classpath:db.properties</value>
+            </array>
+        </property>
+    </bean>
+    <!--配置数据库信息-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="${driver}"></property>
+        <property name="url" value="${url}"></property>
+        <property name="username" value="${username}"></property>
+        <property name="password" value="${password}"></property>
+    </bean>
+    <!-- 在IOC容器中创建MyBatis的核心类SqlSessionFactory-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="mapperLocations" value="classpath:edu/qhu/mapper/*.xml"></property>
+        <property name="configLocation" value="classpath:applicationContext-mybatis.xml"></property>
+    </bean>
+    <!-- 批量生产mapper动态代理对象 -->
+    <bean id="studentMappers" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <property name="basePackage" value="edu.qhu.mapper"></property>
+    </bean>
+
+    <bean id="teacherService" class="edu.qhu.service.impl.TeacherServiceImpl">
+        <property name="teacherMapper" ref="teacherMapper"></property>
+    </bean>
+    <bean id="studentService" class="edu.qhu.service.impl.StudentServiceImpl">
+        <property name="studentMapper" ref="studentMapper"></property>
+    </bean>
+    <bean id="adminService" class="edu.qhu.service.impl.AdminServiceImpl">
+        <property name="adminMapper" ref="adminMapper"></property>
+    </bean>
+</beans>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.qhu.mapper.TeacherMapper">
+    <!--查询当前登录老师是否存在-->
+    <select id="checkExist" parameterType="Teacher" resultType="Teacher">
+        select * from teacher where teacherid=#{teacherId} and teacherpwd=#{teacherPwd}
+    </select>
+    <!--老师添加学生-->
+    <insert id="addStudent" parameterType="Student">
+        insert into student(studentid,studentpwd,studentname,studentclass,studenttel) values (#{studentId},#{studentPwd},#{studentName},#{studentClass},${studentTel})
+    </insert>
+    <!--老师删除学生-->
+    <delete id="deleteStudent" parameterType="Student">
+        delete from student where studentname=#{studentName} and studentclass=#{studentClass} and studentId=#{studentId}
+    </delete>
+    <delete id="deleteStudentById" parameterType="String">
+        delete from student where studentid=#{value}
+    </delete>
+    <!--老师删除学生时检查输入信息是否正确-->
+    <select id="checkStudentIsOrNotExist" parameterType="Student" resultType="Student">
+        select * from student where studentid=#{studentId} and studentname=#{studentName} and studentclass=#{studentClass}
+    </select>
+    <!--老师查询所有学生-->
+    <select id="queryAllStudents" resultType="Student">
+        select * from student
+    </select>
+    <!--老师发布作业-->
+    <insert id="uploadHomeworkFront" parameterType="TeaUploadHomework">
+        insert into teauploadhomeworkfront(title,path,deadline,teachername) values (#{title},#{path},#{deadline},#{teacherName})
+    </insert>
+    <insert id="uploadHomeworkBack" parameterType="TeaUploadHomework">
+        insert into teauploadhomeworkback(title,path,deadline,teachername) values (#{title},#{path},#{deadline},#{teacherName})
+    </insert>
+    <!--老师发布教学文件-->
+    <insert id="uploadTeachFile" parameterType="TeaUploadTeachFile">
+        insert into teauploadteachfile(name, path,releasedate,teachername) values (#{name},#{path},#{releaseDate},#{teacherName})
+    </insert>
+    <!--老师具体查看学生提交的作业-->
+    <select id="checkHomeworkInfoTitleFront" resultType="String">
+        select title from teauploadhomeworkfront order by deadline desc
+    </select>
+    <select id="checkHomeworkInfoTitleBack" resultType="String">
+        select title from teauploadhomeworkback order by deadline desc
+    </select>
+    <select id="checkHomeworkInfoFront" resultType="StuUploadHomework" parameterType="String">
+        select * from stuuploadhomeworkfront where title=#{value} order by studentid
+    </select>
+    <select id="checkHomeworkInfoBack" resultType="StuUploadHomework" parameterType="String">
+        select * from stuuploadhomeworkback where title=#{value} order by studentid
+    </select>
+    <!--老师查看学生个人信息-->
+    <select id="seeStudentInfoFront" parameterType="String" resultType="StudentInfo">
+        select student.studentid,studentpwd,studentname,studentclass,studenttel,score,stuuploadhomeworkfront.title,deadline
+        from student,stuuploadhomeworkfront,teauploadhomeworkfront where student.studentid=#{value} and stuuploadhomeworkfront.studentid=#{value}
+        and stuuploadhomeworkfront.title=teauploadhomeworkfront.title order by deadline
+    </select>
+    <select id="seeStudentInfoBack" parameterType="String" resultType="StudentInfo">
+        select student.studentid,studentpwd,studentname,studentclass,studenttel,score,stuuploadhomeworkback.title,deadline
+        from student,stuuploadhomeworkback,teauploadhomeworkback where student.studentid=#{value} and stuuploadhomeworkback.studentid=#{value}
+        and stuuploadhomeworkback.title=teauploadhomeworkback.title order by deadline
+    </select>
+    <!--老师导出学生成绩-->
+    <select id="exportGradeFront" resultType="StudentGradeInfo">
+        SELECT student.studentid,studentname,studentclass,stuuploadhomeworkfront.score,stuuploadhomeworkfront.title,deadline
+        FROM student,stuuploadhomeworkfront,teauploadhomeworkfront WHERE student.studentid=stuuploadhomeworkfront.studentid AND
+        teauploadhomeworkfront.title=stuuploadhomeworkfront.title order by deadline
+    </select>
+    <select id="exportGradeBack" resultType="StudentGradeInfo">
+        SELECT student.studentid,studentname,studentclass,stuuploadhomeworkback.score,stuuploadhomeworkback.title,deadline
+        FROM student,stuuploadhomeworkback,teauploadhomeworkback WHERE student.studentid=stuuploadhomeworkback.studentid AND
+        teauploadhomeworkback.title=stuuploadhomeworkback.title order by deadline
+    </select>
+    <!--老师查看学生留言-->
+    <select id="seeMessages" parameterType="String" resultType="Messages">
+        select studentname as "sendname",context,sendtime from stutotea,teacher,student where teacher.teacherid=stutotea.teacherid and stutotea.teacherid=#{value} and stutotea.studentid=student.studentid order by sendtime
+    </select>
+    <!--老师回复消息-->
+    <insert id="replyMessages" parameterType="TeaToStu">
+        insert into teatostu(teacherid, studentid, context, sendtime) values (#{teacherId},#{studentId},#{context},#{time})
+    </insert>
+    <!--老师根据name查id-->
+    <select id="queryIdByName" parameterType="String" resultType="String">
+        select studentid from student where studentname=#{value}
+    </select>
+    <!--老师更新成绩-->
+    <update id="updateScoreFront" parameterType="UpdateScore">
+        update stuuploadhomeworkfront set score=#{score} where studentid=#{studentId} and title=#{title}
+    </update>
+    <update id="updateScoreBack" parameterType="UpdateScore">
+        update stuuploadhomeworkback set score=${score} where studentid=#{studentId} and title=#{title}
+    </update>
+    <!--老师查看此人是前端还是后端-->
+    <select id="isFront" parameterType="String" resultType="StuUploadHomework">
+        select * from stuuploadhomeworkfront where studentid=#{value}
+    </select>
+    <!--老师修改密码-->
+    <update id="changePassword" parameterType="Teacher">
+        update teacher set teacherpwd=#{teacherPwd} where teacherid=#{teacherId}
+    </update>
+    <!--老师删除教学文件-->
+    <delete id="deleteTeachFileByName" parameterType="String">
+        delete from teauploadteachfile  where name=#{value}
+    </delete>
+    <delete id="deleteTeachFileAll">
+        delete from teauploadteachfile
+    </delete>
+    <!--老师查看自己曾经发布的文件-->
+    <select id="seeTeachFile" parameterType="String" resultType="TeaUploadTeachFile">
+        select * from teauploadteachfile where teachername=#{value}
+    </select>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.qhu.mapper.AdminMapper">
+    <!--查看当前管理员是否存在-->
+    <select id="checkExist" parameterType="Admin" resultType="Admin">
+        select * from admin where adminid=#{adminId} and adminpwd=#{adminPwd}
+    </select>
+    <!--管理员查看老师相关信息-->
+    <select id="seeTeachersInfo" resultType="Teacher">
+        select * from teacher
+    </select>
+    <!--管理员添加老师-->
+    <insert id="addTeacher" parameterType="Teacher">
+        insert into teacher(teacherid, teacherpwd, teachername) values (#{teacherId},#{teacherPwd},#{teacherName})
+    </insert>
+    <!--管理员删除老师-->
+    <delete id="deleteTeacher" parameterType="Teacher">
+        delete from teacher where teacherid=#{teacherId} and teachername=#{teacherName}
+    </delete>
+    <delete id="deleteTeacherById" parameterType="String">
+        delete from teacher where teacherid=#{value}
+    </delete>
+    <!--管理员查看老师是否存在-->
+    <select id="seeTeacherIsOrNotExist" parameterType="Teacher" resultType="Teacher">
+        select * from teacher where teachername=#{teacherName} and teacherid=#{teacherId}
+    </select>
+</mapper>

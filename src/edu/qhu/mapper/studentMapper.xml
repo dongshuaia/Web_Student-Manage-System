@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.qhu.mapper.StudentMapper">
+    <!--查看该学生是否存在-->
+    <select id="checkExist" parameterType="Student" resultType="Student">
+        select * from student where studentid=#{studentId} and studentpwd=#{studentPwd}
+    </select>
+    <!--学生查看老师发布的作业-->
+    <select id="seeHomeworkFront" resultType="TeaUploadHomework">
+        select * from teauploadhomeworkfront order by deadline desc
+    </select>
+    <select id="seeHomeworkBack" resultType="TeaUploadHomework">
+        select * from teauploadhomeworkback order by deadline desc
+    </select>
+    <!--学生查看老师发布的教学资源-->
+    <select id="seeTeachFile" resultType="TeaUploadTeachFile">
+        select * from teauploadteachfile order by releasedate desc
+    </select>
+    <!--学生上传作业-->
+    <insert id="uploadHomeworkFront" parameterType="StuUploadHomework">
+        insert into stuuploadhomeworkfront(studentid, name, path, title) values (#{studentId},#{name},#{path},#{title})
+    </insert>
+    <insert id="uploadHomeworkBack" parameterType="StuUploadHomework">
+        insert into stuuploadhomeworkback(studentid, name, path, title) values (#{studentId},#{name},#{path},#{title})
+    </insert>
+    <!--学生查看自己的作业-->
+    <select id="seeHomeworkByselfFront" parameterType="String" resultType="StuUploadHomework">
+        select * from stuuploadhomeworkfront where studentid=#{value}
+    </select>
+    <select id="seeHomeworkByselfBack" parameterType="String" resultType="StuUploadHomework">
+        select * from stuuploadhomeworkback where studentid=#{value}
+    </select>
+    <!--学生向老师留言-->
+    <insert id="leaveMessagesToTeacher" parameterType="StuToTea">
+        insert into stutotea(studentid, teacherid, context, sendtime) values (#{studentId},#{teacherId},#{context},#{time})
+    </insert>
+    <select id="queryIdByName" resultType="String" parameterType="String">
+        select teacherid from teacher where teachername=#{value}
+    </select>
+    <!--学生查看有哪些老师，以便选择留言-->
+    <select id="seeTeachers" resultType="Teacher">
+        select * from teacher
+    </select>
+    <!--学生查看之前的留言-->
+    <select id="seeMessagesStuToTea" resultType="Messages" parameterType="String">
+        select teachername as "sendname",context,sendtime from stutotea,teacher where stutotea.studentid=#{value} and stutotea.teacherid=teacher.teacherid
+    </select>
+    <select id="seeMessagesTeaToStu" resultType="Messages" parameterType="String">
+        select teachername as "sendname",context,sendtime from teatostu,teacher where teatostu.studentid=#{value} and teacher.teacherid=teatostu.teacherid
+    </select>
+    <!--学生删除留言-->
+    <delete id="deleteMessages" parameterType="String">
+        delete from stutotea where sendtime=#{value}
+    </delete>
+    <delete id="deleteMessages_" parameterType="String">
+        delete from teatostu where sendtime=#{value}
+    </delete>
+    <!--学生在线答题-->
+    <select id="getQuestions" resultType="Question" parameterType="String">
+        select question,answer from questionbank where id=#{value}
+    </select>
+    <!--学生修改密码-->
+    <update id="changePassword" parameterType="Student">
+        update student set studentpwd=#{studentPwd} where studentid=#{studentId}
+    </update>
+</mapper>

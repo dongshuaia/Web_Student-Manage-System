@@ -1,0 +1,51 @@
+.body {
+    width: 1000px;
+    /*border: 1px solid red;*/
+    margin: auto;
+}
+
+h3 {
+    text-align: center;
+    margin: 50px 50px;
+}
+
+body {
+    background: url("../img/bg2.jpg") no-repeat center/cover;
+}
+
+li {
+    margin: 20px 0px;
+    /*text-indent: 30px;*/
+    letter-spacing: 5px;
+}
+
+h4 {
+    font-size: 23px;
+}
+
+p {
+    font-size: 20px;
+    font-family: "宋体";
+    letter-spacing: 5px;
+    line-height: 30px;
+}
+
+.content {
+    text-indent: 35px;
+    list-style-type: none;
+}
+
+.cont-one {
+    font-size: 22px;
+    font-weight: 900px;
+    font-family: "宋体";
+}
+
+.cont-two {
+    color: red;
+    font-size: 22px;
+}
+
+h1, h3 {
+    text-align: center;
+}
